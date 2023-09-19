@@ -13,6 +13,7 @@ struct ContentView: View {
     enum motionTypes {
         case gyro, accelerometer
     }
+    @State private var motionUsed = ""
     @State private var manager = CMMotionManager()
     @State private var motionX: Double?
     @State private var motionY: Double?
@@ -77,12 +78,20 @@ struct ContentView: View {
                 VStack{
                     Group{
                         Button("Gyroscope"){
+                            motionUsed = "gyroscope"
                             startMotion(with: .gyro)
                         }
                         .padding()
+                        
                         Button("Accelerometer"){
+                            motionUsed = "accelerometer"
                             startMotion(with: .accelerometer)
                         }
+                        .padding()
+                        
+                        Text("Currently using \(motionUsed)")
+                            .foregroundStyle(.white)
+                            .padding()
                     }
                     .buttonStyle(.borderedProminent)
                 }
