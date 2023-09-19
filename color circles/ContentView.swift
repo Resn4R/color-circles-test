@@ -13,6 +13,7 @@ struct ContentView: View {
     enum motionTypes {
         case gyro, accelerometer
     }
+    @State private var motionUpdateSamplingRate = 0.0001
     @State private var motionUsed = ""
     @State private var manager = CMMotionManager()
     @State private var motionX: Double?
@@ -25,6 +26,8 @@ struct ContentView: View {
             manager.stopAccelerometerUpdates()
             
             manager.startGyroUpdates(to: .main) { (data, error) in
+                manager.gyroUpdateInterval = motionUpdateSamplingRate
+                
                 motionX = abs((manager.gyroData?.rotationRate.x)!)
                 motionY = abs((manager.gyroData?.rotationRate.y)!)
                 motionZ = abs((manager.gyroData?.rotationRate.z)!)
@@ -33,6 +36,8 @@ struct ContentView: View {
             manager.stopGyroUpdates()
             
             manager.startAccelerometerUpdates(to: .main) { (data, error) in
+                manager.accelerometerUpdateInterval = motionUpdateSamplingRate
+
                 motionX = abs((manager.accelerometerData?.acceleration.x)!)
                 motionY = abs((manager.accelerometerData?.acceleration.y)!)
                 motionZ = abs((manager.accelerometerData?.acceleration.z)!)
@@ -92,6 +97,11 @@ struct ContentView: View {
                         Text("Currently using \(motionUsed)")
                             .foregroundStyle(.white)
                             .padding()
+                        
+                        Text("Step: \(motionUpdateSamplingRate)")
+                            .foregroundStyle(.white)
+                            .padding()
+                        Slider(value: $motionUpdateSamplingRate, in: 0...1)
                     }
                     .buttonStyle(.borderedProminent)
                 }
@@ -102,8 +112,8 @@ struct ContentView: View {
             .onAppear{
                 canYouRunIt()
                 
-                manager.gyroUpdateInterval = 0.0001
-                manager.accelerometerUpdateInterval = 0.0001
+                manager.gyroUpdateInterval = motionUpdateSamplingRate
+                manager.accelerometerUpdateInterval = motionUpdateSamplingRate
             }
     }
 }
